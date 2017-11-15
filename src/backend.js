@@ -1,6 +1,8 @@
 import firebase from 'firebase';
 import moment from 'moment';
 const uuidv4 = require('uuid/v4');
+// const firebase = require('firebase');
+// const moment = require('moment');
 
 var config = {
   apiKey: "",
@@ -40,7 +42,7 @@ export async function initializeUserIfNeeded() {
 }
 
 export async function displayUser() {
-  // not needed
+  // not needed, user data already available upon initialization
 }
 
 export async function createProject(userId, startDate, endDate, address, description, name) {
@@ -63,18 +65,18 @@ export async function createProject(userId, startDate, endDate, address, descrip
       finishingStepOne: false,
       finishingStepTwo: false,
       finishingStepThree: false
-      // use .inludes() to render the different tyoes of tasks
+      // use .inludes() to render the different types of tasks
     },
     startDate: moment(startDate).format(),
     endDate: moment(endDate).format(),
     address,
-    coords: await getCoords(address), // contains {lat: '', lng: ''}
+    coords: await getCoords(address), // will contain {lat: '', lng: ''}
     description,
     name,
     current: true,
     cancelled: false
   })
-  return {...newProject, id: projectId}                                                     // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+  return {...newProject, id: projectId}
 }
 
 
@@ -84,6 +86,7 @@ export async function getProjectInfo(userId, projectId) {
   const project = projectRaw.val()
   const weather = await weatherApp(project.coords)
   return {...project, projectId, weather}
+  // add calculateprogress
 }
 
 export async function getCurrentProjects(userId) {
@@ -92,31 +95,21 @@ export async function getCurrentProjects(userId) {
   const filteredProjects = Object.keys(projects).map(p => ({
     ...projects[p],
     id: p
-  })).filter(p => p.current).map(p =>({...p, status: calculateProgressStatus(p)}))
+  })).filter(p => p.current && !p.cancelled).map(p =>({...p, status: calculateProgressStatus(p)}))
   return filteredProjects
 }
 
-// Maps over an array and returns a promise containing an object {Address, status, geo{lat, lng} }for each array element
-            //    >>>>>> replaced by logic inside searchProject function <<<<<<
-// export async function getProjectInfoThumbnail(userId) {
-//   const newArr = array.map((e)=> ({ 
-//     address: user[e].location,
-//     status: calculateProgressStatus(user[e].completionStatus),
-//     coords: user[e].coords
-//   }))
-//   return newArr
-// }
-
-// returns a promise containing an array of IDs
-export async function searchProject(user, searchText) { 
-  // get all projects
-  // then if there is a search term argument passed to it, use search term to filter over projects
-  // if not, give back all projects
-  //return an array of projectIds populated by checking user.projectId.name for the searchText
+export async function getCancelledProjects(userId) {
+  const currentProjects = await database.ref(`users/${userId}/projects`).once('value')
+  const projects = currentProjects.val()
+  const filteredProjects = Object.keys(projects).map(p => ({
+    ...projects[p],
+    id: p
+  })).filter(p => p.cancelled).map(p =>({...p, status: calculateProgressStatus(p)}))
+  return filteredProjects
 }
 
-// //  Same as above but cancelled
-export async function cancelProject(user, projectId) {
+export async function cancelProject(userId, projectId) {
   const projectRaw = await database.ref(`users/${userId}/projects`).child(projectId).once('value')
   const project = projectRaw.val()
   if(project.cancelled) return
@@ -138,12 +131,13 @@ export async function updateProject(userId, projectId, task) {
       [task]: !project.completionStatus[task]
     }
   })
+  // remove return and add logic here to check
   return { ...updatedProject, id: projectId }  
 }
 
-// export async function editProjectNotes(user, projectId) {
-//   // edit notes section of project, if we add this functionality
-// }
+export async function editProjectNotes(user, projectId) {
+  // edit notes section of project, if we add this functionality
+}
 
 export async function calculateProgressStatus(project) {
   const progress = Object.keys(project.completionStatus).map(p => project.completionStatus[p])
@@ -178,8 +172,7 @@ async function getCoords(address) {
   const data = await fetchCoords.json()
   console.log(data)
   const coords = data.results[0].geometry.location
-  return coords
-  // return lat, lng
+  return coords // return {lat: '', lng: ''}
 }
 
 export async function weatherApp(coords) {
@@ -191,6 +184,55 @@ export async function weatherApp(coords) {
   return weather
 }
 
+// Maps over an array and returns a promise containing an object {Address, status, geo{lat, lng} }for each array element
+            //    >>>>>> replaced by logic inside searchProject function <<<<<<
+// export async function getProjectInfoThumbnail(userId) {
+//   const newArr = array.map((e)=> ({ 
+//     address: user[e].location,
+//     status: calculateProgressStatus(user[e].completionStatus),
+//     coords: user[e].coords
+//   }))
+//   return newArr
+// }
+
+//returns a promise containing an array of IDs
+export async function searchProject(userId, searchText) { 
+  const allProjects = await database.ref(`users/${userId}/projects`).once('value')
+  const projects = allProjects.val()
+  const filteredProjects = Object.keys(projects).map(p => ({
+    ...projects[p],
+    id: p
+  })).filter(p => p.name.includes(searchText) || p.description.includes(searchText) || p.address.includes(searchText)).map(p =>({...p, status: calculateProgressStatus(p)}))
+  return filteredProjects
+  // get all projects
+  // then if there is a search term argument passed to it, use search term to filter over projects
+  // if not, give back all projects
+  //return an array of projectIds populated by checking user.projectId.name for the searchText
+}
+
+async function checkCompletionStatus() {
+  // function to check if all tasks are complete, pass tasks objects,
+  //if true  then set current: false (not in this function)
+  // inside updatetask
+  // inside display completed projects (looping over all projects)
+}
+
+export async function getCompletedProjects() {
+  // function to get completed projects
+    //if true  then set current: false (not in this function)
+    // calls the checkalltakscompleted function in a filter over all the projects
+  calculateProgressStatus
+}
+
+
+
+// add notes section to each project                                   <<<<<<<<<<<<<<<<
+
+
+// add assert tests
+
+
+
 
 
 
@@ -200,7 +242,7 @@ export async function weatherApp(coords) {
 
 // data structure (firebase)
 // user (only one user, software is custom built for each company <<< not hard to create different users, very little change <<<<<
-// name
+// 	name
 //  id
 //  email
 //  picture
@@ -232,5 +274,3 @@ export async function weatherApp(coords) {
 // 	progress status
 // 			compare start/end dates to completion status and generate flags
 //         (behind schedule, on-time, ahead of schedule)
-
-// add notes section to each project?                                   <<<<<<<<<<<<<<<<
