@@ -1,7 +1,18 @@
 import React, { Component } from 'react';
 import './App.css';
 import moment from 'moment';
-import { initializeUserIfNeeded, addToCurrentProjects, createProject, getProjectInfo, updateProject, cancelProject, getCurrentProjects, getCancelledProjects, searchProject } from './backend';
+import { 
+  initializeUserIfNeeded, 
+  addToCurrentProjects, 
+  createProject, 
+  getProjectInfo, 
+  updateProject, 
+  cancelProject, 
+  getCurrentProjects, 
+  getCancelledProjects, 
+  searchProject, 
+  checkCompletionStatus 
+} from './backend';
 
 const uuidv4 = require('uuid/v4');
 
@@ -14,6 +25,7 @@ class App extends Component {
     }
   }
 
+  // EXAMPLE FUNCTION CALLS (with console logged output)
   async componentDidMount() {
     const user = await initializeUserIfNeeded()
     console.log('user >>>', user)
@@ -32,6 +44,8 @@ class App extends Component {
     console.log('cancelledProjects >>>', cancelledProjects)
     const search = await searchProject(user.id, 'fairlawn')
     console.log('searchProject >>>', search)
+    const checkIfComplete = await checkCompletionStatus(user.id, '0ba18954-7500-417d-a9e2-fb33293c3690')
+    console.log('checkIfComplete >>>', checkIfComplete)
   }
 
   render() {
@@ -45,5 +59,3 @@ class App extends Component {
 }
 
 export default App;
-
-// write test calls for backend functions here instead of through the backend itelf, this will eliminate need for unecessary backend testing
