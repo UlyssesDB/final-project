@@ -1,3 +1,5 @@
+FORMATTING IN .MD NOT WORKING PROPERLY, CLONE REPO TO DISPLAY README FILE CORRECTLY
+
 NOTES:
 
 - tests in App.js (with console logged output)
