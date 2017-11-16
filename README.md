@@ -83,45 +83,47 @@ weatherApp(coords)
 populateMap() INCOMPLETE
     // populate map based on each project's coords 
 
-editProjectNotes(user, projectId) INCOMPLETE
-    // added functionality / stretch goal, edits notes section a project
+export async function editProjectNotes(userId, projectId, inputText)
+  // edit notes section of project, if we add this functionality
+  // function is complete and can be used if needed, see notes in backend.js createProject() function
 
 
 DATABASE STRUCTURE:
 
-new firebase data structure
-    user
-        name
-        id
-        email
-        picture
-        projects
-            completionStatus
-                demoStepOne
-                demoStepTwo
-                demoStepThree
-                foundationStepOne
-                foundationStepTwo
-                foundationStepThree
-                wallsStepOne
-                wallsStepTwo
-                wallsStepThree
-                roofingStepOne
-                roofingStepTwo
-                roofingStepThree
-                finishingStepOne
-                finishingStepTwo
-                finishingStepThree
-          startDate
-          endDate
-          address
-          coords
-                lat
-                lng
-          description
-          name
-          current
-          cancelled
+- new firebase data structure
+- -    user
+- - -        name
+- - -        id
+- - -        email
+- - -        picture
+- - -        projects
+- - -            completionStatus
+- - - -                demoStepOne
+- - - -                demoStepTwo
+- - - -                demoStepThree
+- - - -                foundationStepOne
+- - - -                foundationStepTwo
+- - - -                foundationStepThree
+- - - -                wallsStepOne
+- - - -                wallsStepTwo
+- - - -                wallsStepThree
+- - - -                roofingStepOne
+- - - -                roofingStepTwo
+- - - -                roofingStepThree
+- - - -                finishingStepOne
+- - - -                finishingStepTwo
+- - - -                finishingStepThree
+- - -          startDate
+- - -          endDate
+- - -          address
+- - -          coords
+- - - -                lat
+- - - -                lng
+- - -          description
+- - -          name
+- - -          current
+- - -          cancelled
+- - -          notes
 
  
 REMOVED:

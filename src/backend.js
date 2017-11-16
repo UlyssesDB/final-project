@@ -1,7 +1,6 @@
-
 // tests in App.js
 
-// used 'moment' (for date), and 'uuidv4' (for randomly generated project id's)
+// used 'moment' (for date), and 'uuidv4' (to randomly generate project id's)
 // npm install inside project directory should install all these dependencies
 import firebase from 'firebase';
 import moment from 'moment';
@@ -86,6 +85,7 @@ export async function createProject(userId, startDate, endDate, address, descrip
       finishingStepTwo: false,
       finishingStepThree: false
       // use Object.keys(project.completionStatus).filter(a => a.includes('demo').map(a=>({[a]: project.completedStatus[a]}))) to render the different types of tasks
+      // or use getTaskGroup() function
     },
     startDate: moment(startDate).format(),
     endDate: moment(endDate).format(),
@@ -94,7 +94,9 @@ export async function createProject(userId, startDate, endDate, address, descrip
     description,
     name,
     current: true,
-    cancelled: false
+    cancelled: false,
+    notes: ''   // modified with editProjectNotes() function
+                // input directly at project creation can be added by adding 'notes' to the parameters, and the notes: value
   })
   return { ...newProject, id: projectId }
 }
@@ -231,7 +233,7 @@ function calculateProgressStatus(project) {
   //console.log('calculateProgressStatus >>>', { isOnTime: comparedLengths > comparedTimes, progress: comparedLengths })
   return { isOnTime: comparedLengths > comparedTimes, progress: comparedLengths }
           //  isOnTime: returns true/false, progress: returns percentage as decimal value
-                
+
   // start date, end date, current date
   // (end date - current date) / (end date - start date) = percentage
   // num boxes checked / total checkboxes = percentage
@@ -263,12 +265,17 @@ export async function populateMap() {
 
 }
 
-// added functionality / stretch goal, edits notes section a project                                              <<<<<<<<<<<<<<<<<<
-export async function editProjectNotes(user, projectId) {
+// added functionality/stretch goal, edits notes section of a project
+export async function editProjectNotes(userId, projectId, inputText) {
+  const projectRaw = await database.ref(`users/${userId}/projects`).child(projectId).once('value')
+  const project = projectRaw.val()
+  const updatedProject = await database.ref(`users/${userId}/projects`).child(projectId).set({
+    ...project,
+    notes: inputText
+  })
+  return { ...updatedProject, id: projectId }
   // edit notes section of project, if we add this functionality
 }
-
-
 
 
 
