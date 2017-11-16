@@ -20,8 +20,9 @@ FUNCTION LIST (with parameters, and explanation):
 initializeUserIfNeeded()  
     // login user, returns user object
 
-displayUser() 
+displayUser(userId)
     // not needed, user data already available as object upon initialization
+    // returns on object with only basic user data, not including projects (see notes inside function / can be included if required)
 
 createProject(userId, startDate, endDate, address, description, name)
     // adds a new project to firebase
@@ -31,7 +32,7 @@ createProject(userId, startDate, endDate, address, description, name)
 export function getTaskGroup(project, group)
     // example: returns only/all 'demo' related tasks
     //   console.log(getTaskGroup(project, 'demo'))
-    
+
 getProjectInfo(userId, projectId) 
     // returns a single project as an object, which includes project id, current weather, and progress status
 
@@ -58,9 +59,18 @@ updateProject(userId, projectId, task)
 checkCompletionStatus(userId, project)
     // tests if a project's completionStatus tasks have all been set to true (i.e. project is complete)
     // will not be exported, only used within backend, only exported for testing
+    // called within:
+        // getCompletedProjects
+        // updateProject
 
 calculateProgressStatus(project)
     // returns an object with two keys {isOnTIme: true/false, progress: %}
+    // will not be exported, only used within backend, only exported for testing
+    // called within:
+        // getProjectInfo
+        // getCurrentProjects
+        // getCancelledProjects
+        // getCompletedProjects
 
 getCoords(address)
     // used within createProject function to set coordinates object
@@ -126,3 +136,20 @@ REMOVED:
 //   }))
 //   return newArr
 // }
+
+
+
+export async function getIsometricImage(image) {
+  const isometricImage = await storageRef.child(`isometric/${image}`).getDownloadURL()
+  console.log('isometricImage >>>>>>>>>>', isometricImage)
+  //const imageURL = image.downloadURL
+  //return imageURL
+  return { isometricImage }
+}
+
+ // return image url in calculateProgressStatus function depending on percentage returned                          <<<<<<<<<<<<<<<<<<
+      // need to know how many tasks there will be in total
+      // need to know what percent complete returns what image
+
+// const pic = await getIsometricImage(user.id, '1-01.png')
+    // console.log('getIsometricImage >>>', pic)

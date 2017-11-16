@@ -7,14 +7,14 @@ import firebase from 'firebase';
 import moment from 'moment';
 const uuidv4 = require('uuid/v4');
 
-// firebase import
+// Initialize Firebase
 var config = {
-  apiKey: "",
-  authDomain: "",
-  databaseURL: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: ""
+  apiKey: "AIzaSyDgU1VCRk9ld9-Xhs7cfhSnbEJJWiRSHTA",
+  authDomain: "decodemtl-nsu.firebaseapp.com",
+  databaseURL: "https://decodemtl-nsu.firebaseio.com",
+  projectId: "decodemtl-nsu",
+  storageBucket: "decodemtl-nsu.appspot.com",
+  messagingSenderId: "671775643746"
 };
 firebase.initializeApp(config);
 const database = firebase.database();
@@ -22,12 +22,12 @@ const provider = new firebase.auth.GoogleAuthProvider();
 const storageRef = firebase.storage().ref();
 
 // google maps API
-const GOOGLE_MAPS_API_KEY = '';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyBfxtILkIqiz2_jVj9PjbvUQYJpJI9jzv0';
 const GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 // weather API
 const DARKSKY_API_URL = 'https://api.darksky.net/forecast/';
-const DARKSKY_API_KEY = '';
+const DARKSKY_API_KEY = 'f1718154a8b1bed22d3f3def352e3f89';
 const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
 
 // login user, returns user object
@@ -49,8 +49,18 @@ export async function initializeUserIfNeeded() {
 }
 
 // not needed, user data already available as object upon initialization
-export async function displayUser() {
-
+// returns on object with only basic user data, not including projects
+export async function displayUser(userId) {
+  const userRaw = await database.ref(`users/`).child(userId).once('value')
+  const userData = userRaw.val()
+  const requiredInfo = {
+    email: userData.email,
+    id: userData.id,
+    img: userData.img,
+    name: userData.name,
+    // projects: userData.projects                          // comment in if projects data is required
+  }
+  return requiredInfo
 }
 
 // adds a new project to firebase
@@ -134,7 +144,7 @@ export async function getCompletedProjects(userId) {
   const filteredProjects = Object.keys(projects).map(p => ({
     ...projects[p],
     id: p
-  })).filter(p => checkCompletionStatus(p))
+  })).filter(p => checkCompletionStatus(p)).map(p => ({...p, status: calculateProgressStatus(p) }))
   return filteredProjects
   // function to get completed projects
   //if true  then set current: false (not in this function)
@@ -196,6 +206,9 @@ export async function updateProject(userId, projectId, task) {
 }
 
 // tests if a project's completionStatus tasks have all been set to true (i.e. project is complete)
+// called within:
+   // getCompletedProjects
+   // updateProject
 function checkCompletionStatus(p) {
   const arr = Object.keys(p.completionStatus).map(k => p.completionStatus[k])
   const complete = arr.filter(a => a).length
@@ -203,6 +216,11 @@ function checkCompletionStatus(p) {
 }
 
 // returns an object with two keys {isOnTIme: true/false, progress: %}
+// called within:
+    // getProjectInfo
+    // getCurrentProjects
+    // getCancelledProjects
+    // getCompletedProjects
 function calculateProgressStatus(project) {
   const progress = Object.keys(project.completionStatus).map(p => project.completionStatus[p])
   const comparedLengths = progress.filter(p => p).length / progress.length
@@ -210,10 +228,10 @@ function calculateProgressStatus(project) {
   const current = moment().unix()
   const end = moment(project.endDate).unix()
   const comparedTimes = (end - current) / (end - start)
+  //console.log('calculateProgressStatus >>>', { isOnTime: comparedLengths > comparedTimes, progress: comparedLengths })
   return { isOnTime: comparedLengths > comparedTimes, progress: comparedLengths }
-  // 			compare start/end dates to completionStatus (number of tasks completed) and generate flags
-  //         (behind schedule, on-time, ahead of schedule)
-  // also get picture
+          //  isOnTime: returns true/false, progress: returns percentage as decimal value
+                
   // start date, end date, current date
   // (end date - current date) / (end date - start date) = percentage
   // num boxes checked / total checkboxes = percentage
@@ -252,7 +270,6 @@ export async function editProjectNotes(user, projectId) {
 
 
 
-// return image url in calculateProgressStatus function depending on percentage returned                          <<<<<<<<<<<<<<<<<<
 
 
 
