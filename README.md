@@ -28,6 +28,10 @@ createProject(userId, startDate, endDate, address, description, name)
     // coordinates are automatically calculated based on address input
     // returns an object, which includes the project id
 
+export function getTaskGroup(project, group)
+    // example: returns only/all 'demo' related tasks
+    //   console.log(getTaskGroup(project, 'demo'))
+    
 getProjectInfo(userId, projectId) 
     // returns a single project as an object, which includes project id, current weather, and progress status
 
