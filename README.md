@@ -90,40 +90,40 @@ export async function editProjectNotes(userId, projectId, inputText)
 
 DATABASE STRUCTURE:
 
-- new firebase data structure
-- -    user
-- - -        name
-- - -        id
-- - -        email
-- - -        picture
-- - -        projects
-- - -            completionStatus
-- - - -                demoStepOne
-- - - -                demoStepTwo
-- - - -                demoStepThree
-- - - -                foundationStepOne
-- - - -                foundationStepTwo
-- - - -                foundationStepThree
-- - - -                wallsStepOne
-- - - -                wallsStepTwo
-- - - -                wallsStepThree
-- - - -                roofingStepOne
-- - - -                roofingStepTwo
-- - - -                roofingStepThree
-- - - -                finishingStepOne
-- - - -                finishingStepTwo
-- - - -                finishingStepThree
-- - -          startDate
-- - -          endDate
-- - -          address
-- - -          coords
-- - - -                lat
-- - - -                lng
-- - -          description
-- - -          name
-- - -          current
-- - -          cancelled
-- - -          notes
+new firebase data structure
+    user
+        name
+        id
+        email
+        picture
+        projects
+            completionStatus
+                demoStepOne
+                demoStepTwo
+                demoStepThree
+                foundationStepOne
+                foundationStepTwo
+                foundationStepThree
+                wallsStepOne
+                wallsStepTwo
+                wallsStepThree
+                roofingStepOne
+                roofingStepTwo
+                roofingStepThree
+                finishingStepOne
+                finishingStepTwo
+                finishingStepThree
+          startDate
+          endDate
+          address
+          coords
+                lat
+                lng
+          description
+          name
+          current
+          cancelled
+          notes
 
  
 REMOVED:
