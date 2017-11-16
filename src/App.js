@@ -14,7 +14,8 @@ import {
   checkCompletionStatus,
   getCompletedProjects,
   displayUser,
-  editProjectNotes
+  editProjectNotes,
+  getTaskGroup
 } from './backend';
 
 const uuidv4 = require('uuid/v4');
@@ -31,7 +32,7 @@ class App extends Component {
   // EXAMPLE FUNCTION CALLS (with console logged output)
   async componentDidMount() {
     const user = await initializeUserIfNeeded()
-    // console.log('user >>>', user)
+    console.log('user >>>', user)
     // const project01 = await createProject(user.id, moment().add(1, 'd').format(), moment().add(25, 'd').format(), '20 lakeshore, beaconsfield, QC, canada', 'testing description', 'test 1')
     // const project02 = await createProject(user.id, moment().add(2, 'd').format(), moment().add(19, 'd').format(), '50 fairlawn, beaconsfield, QC, canada', 'testing testing', 'test 2')
     // const project03 = await createProject(user.id, moment().add(3, 'd').format(), moment().add(50, 'd').format(), '26 jasper, beaconsfield, QC, canada', 'testing blablabla', 'test 3')
@@ -45,25 +46,27 @@ class App extends Component {
     // const project11 = await createProject(user.id, moment().add(6, 'd').format(), moment().add(20, 'd').format(), '14 fairlawn, beaconsfield, QC, canada', 'testing obpviponmaf', 'test 92')
     // const project12 = await createProject(user.id, moment().add(6, 'd').format(), moment().add(20, 'd').format(), '15 fairlawn, beaconsfield, QC, canada', 'testing dsfiueiotdsmnfklds ijfdsklfjslkdjflksdjf lksdfjldksjfklsdjf', 'test 93')
     // const project13 = await createProject(user.id, moment().add(6, 'd').format(), moment().add(20, 'd').format(), '400 st-laurent, montreal, QC, canada', 'testing dsfiueiotdsmnfklds ijfdsklfjslkdjflksdjf lksdfjldksjfklsdjf', 'test 93')
-    // console.log('createProject >>>', project1)
-    const getProject = await getProjectInfo(user.id, '186ed3f2-167f-49fe-9e7f-4da6e61d1751')
+    // console.log('createProject >>>', project01)
+    const getProject = await getProjectInfo(user.id, '4d630938-edf7-4f37-ad93-97e7f5aa50f0')
     console.log('getProject >>>', getProject)
-    // const updateProj = await updateProject(user.id, '326f95b6-a725-42f4-80c5-e4f6bb506828', 'demoStepOne')
-    // // console.log('verify project update in database >>>', updateProj)
-    // const cancelThisProject = await cancelProject(user.id, 'adf43210-6b9b-420f-a0f9-759a8bdb69e3')
-    // console.log('cancelThisProject >>>', cancelThisProject)
+    const updateProj = await updateProject(user.id, '505acf0c-b0ca-4721-9f67-ad838d1f9d58', 'demoStepOne')
+    console.log('verify project update in database >>>', updateProj)
+    const cancelThisProject = await cancelProject(user.id, '54b9438f-3ca1-462a-9e3d-9b880911659b')
+    console.log('cancelThisProject >>>', cancelThisProject)
     const currentprojects = await getCurrentProjects(user.id)
-    console.log('currentProjects length >>>', currentprojects)
+    console.log('currentProjects >>>', currentprojects)
     const cancelledProjects = await getCancelledProjects(user.id)
     console.log('cancelledProjects >>>', cancelledProjects)
-    const search = await searchProject(user.id, '6')
+    const search = await searchProject(user.id, 'montreal')
     console.log('searchProject >>>', search)
     const completedProjects = await getCompletedProjects(user.id)
     console.log('completedProjects >>>', completedProjects)
     const gimmeUserInfo = await displayUser(user.id)
     console.log('gimmeUserInfo >>>', gimmeUserInfo)
-    // const changeProjectNotes = await editProjectNotes(user.id, 'adf43210-6b9b-420f-a0f9-759a8bdb69e3', 'HEY CHECK NOTES')
-    // console.log('changeProjectNotes >>>', changeProjectNotes)
+    const changeProjectNotes = await editProjectNotes(user.id, '562916e1-2ad2-4732-bdaa-e6cc4d8b10f7', 'HEY CHECK NOTES')
+    console.log('changeProjectNotes >>>', changeProjectNotes)
+    const getSomeTasks = await getTaskGroup(user.id, '562916e1-2ad2-4732-bdaa-e6cc4d8b10f7', 'foundation')
+    console.log('getSomeTasks >>>', getSomeTasks)
   }
   populate
   render() {

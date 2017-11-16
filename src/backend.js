@@ -102,8 +102,9 @@ export async function createProject(userId, startDate, endDate, address, descrip
 }
 
 // example: returns only/all 'demo' related tasks
-//   console.log(getTaskGroup(project, 'demo'))
-export function getTaskGroup(project, group) {
+export async function getTaskGroup(userId, projectId, group) {
+  const projectRaw = await database.ref(`users/${userId}/projects`).child(projectId).once('value')
+  const project = projectRaw.val()  
   const taskGroup = Object.keys(project.completionStatus).filter(a => a.includes(group)).map(a=>({[a]: project.completionStatus[a]}))
   return taskGroup
 }
