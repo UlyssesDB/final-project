@@ -8,26 +8,26 @@ const uuidv4 = require('uuid/v4');
 
 // Initialize Firebase
 var config = {
-  apiKey: "AIzaSyDgU1VCRk9ld9-Xhs7cfhSnbEJJWiRSHTA",
-  authDomain: "decodemtl-nsu.firebaseapp.com",
-  databaseURL: "https://decodemtl-nsu.firebaseio.com",
-  projectId: "decodemtl-nsu",
-  storageBucket: "decodemtl-nsu.appspot.com",
-  messagingSenderId: "671775643746"
+  apiKey: "AIzaSyBHS4i9jcJ-1wFXr616e1pUJL6S36hOUkg",
+  authDomain: "project-50595.firebaseapp.com",
+  databaseURL: "https://project-50595.firebaseio.com",
+  projectId: "project-50595",
+  storageBucket: "project-50595.appspot.com",
+  messagingSenderId: "717431088466"
 };
 firebase.initializeApp(config);
 const database = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 const storageRef = firebase.storage().ref();
 
-// google maps API
-const GOOGLE_MAPS_API_KEY = 'AIzaSyBfxtILkIqiz2_jVj9PjbvUQYJpJI9jzv0';
+const GOOGLE_MAPS_API_KEY = 'AIzaSyAFvMwd8d-YI-3x-wS64O6XzHL62fqysI4';
 const GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
-// weather API
 const DARKSKY_API_URL = 'https://api.darksky.net/forecast/';
-const DARKSKY_API_KEY = 'f1718154a8b1bed22d3f3def352e3f89';
+const DARKSKY_API_KEY = 'baa65f32ef962af56f5ca63c60bd8d1d';
 const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+
+export const auth = firebase.auth();
 
 // login user, returns user object
 export async function initializeUserIfNeeded() {
@@ -58,6 +58,7 @@ export async function displayUser(userId) {
     img: userData.img,
     name: userData.name,
     // projects: userData.projects                          // comment in if projects data is required
+                  // Object.keys(userData.projects) ???
   }
   return requiredInfo
 }
@@ -94,10 +95,11 @@ export async function createProject(userId, startDate, endDate, address, descrip
     description,
     name,
     current: true,
-    cancelled: false,
-    notes: ''   // modified with editProjectNotes() function
+    cancelled: false
+                // modified with editProjectNotes() function
                 // input directly at project creation can be added by adding 'notes' to the parameters, and the notes: value
   })
+  console.log(newProject, projectId)
   return { ...newProject, id: projectId }
 }
 
@@ -113,6 +115,7 @@ export async function getTaskGroup(userId, projectId, group) {
 export async function getProjectInfo(userId, projectId) {
   const projectRaw = await database.ref(`users/${userId}/projects`).child(projectId).once('value')
   const project = projectRaw.val()
+  console.log(' backend getinfo>>>', project, userId, projectId)
   const weather = await weatherApp(project.coords)
   const status = calculateProgressStatus(project)
   return { ...project, id: projectId, weather, status }
@@ -120,6 +123,7 @@ export async function getProjectInfo(userId, projectId) {
 
 // returns an array of all 'current' projects, as objects, with progress status
 export async function getCurrentProjects(userId) {
+  console.log('call working')
   const currentProjects = await database.ref(`users/${userId}/projects`).once('value')
   const projects = currentProjects.val()
   const filteredProjects = Object.keys(projects).map(p => ({
@@ -146,7 +150,7 @@ export async function getCompletedProjects(userId) {
   const projects = currentProjects.val()
   const filteredProjects = Object.keys(projects).map(p => ({
     ...projects[p],
-    id: p
+    id: p,
   })).filter(p => checkCompletionStatus(p)).map(p => ({...p, status: calculateProgressStatus(p) }))
   return filteredProjects
   // function to get completed projects
