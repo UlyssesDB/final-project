@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import {
   getProjectInfo,
   cancelProject,
-  updateProject
+  updateProject,
+  editProjectNotes
 } from '../backend';
 
 class ProjectProfile extends Component {
@@ -15,19 +16,19 @@ class ProjectProfile extends Component {
     // console.log('projectprofile state >>>', this.state.project)
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.user != this.props.user) {
-      const projId = this.props.location.slice(16);
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (prevProps.user != this.props.user) {
+  //     const projId = this.props.location.slice(16);
 
-      console.log('get project data', this.props)
-      getProjectInfo(this.props.user.id, projId).then(async (response) => {
-        this.setState({
-          project: await getProjectInfo(this.props.user.id, projId)
-        });
-        console.log('getinfo >>>>>', response)
-      });
-    }
-  }
+  //     console.log('get project data', this.props)
+  //     getProjectInfo(this.props.user.id, projId).then(async (response) => {
+  //       this.setState({
+  //         project: await getProjectInfo(this.props.user.id, projId)
+  //       });
+  //       console.log('getinfo >>>>>', response)
+  //     });
+  //   }
+  // }
 
   componentDidMount() {
     // console.log('props >>>', this.props)
@@ -35,13 +36,25 @@ class ProjectProfile extends Component {
 
     //   console.log('getinfo >>>>>', response)
     // )
-
+    const projId = this.props.location.slice(16);
+    
+          console.log('get project data', this.props)
+          getProjectInfo(this.props.user.id, projId).then(async (response) => {
+            this.setState({
+              project: await getProjectInfo(this.props.user.id, projId)
+            });
+            console.log('getinfo >>>>>', response)
+          });
     // console.log('projectprofile componentDidMount >>>', this.state.project)
   }
 
   async cancelMe() {
     const projId = this.props.location.slice(16);
     cancelProject(this.props.user.id, projId)
+  }
+
+  async editNotes() {
+    editProjectNotes(this.props.user.id, this.state.project.id, this.state.notes)
   }
 
   render() {
@@ -74,7 +87,8 @@ class ProjectProfile extends Component {
               <p>{'Summary: ' + this.state.project.weather.summary}</p>
               <p>{'Chance of rain: ' + (this.state.project.weather.precipProbability * 100) + '%'}</p>
             </div>
-
+            <input type='text' value={this.state.notes} onChange={(e) => this.setState({ ...this.state, notes: e.target.value })} />
+            <button onClick={()=> this.editNotes()}>Update Notes</button>
             {console.log('weather: >>>', this.state.project.weather)}
             {this.state.project.cancelled || !this.state.project.current ? '' :
               <Link to={'/mainpage'} >
@@ -88,33 +102,5 @@ class ProjectProfile extends Component {
     );
   }
 }
-
-// completionStatus: {
-//   demoStepOne: false,
-//   demoStepTwo: false,
-//   demoStepThree: false,
-//   foundationStepOne: false,
-//   foundationStepTwo: false,
-//   foundationStepThree: false,
-//   wallsStepOne: false,
-//   wallsStepTwo: false,
-//   wallsStepThree: false,
-//   roofingStepOne: false,
-//   roofingStepTwo: false,
-//   roofingStepThree: false,
-//   finishingStepOne: false,
-//   finishingStepTwo: false,
-//   finishingStepThree: false
-//   // use Object.keys(project.completionStatus).filter(a => a.includes('demo').map(a=>({[a]: project.completedStatus[a]}))) to render the different types of tasks
-//   // or use getTaskGroup() function
-// },
-// startDate: moment(startDate).format(),
-// endDate: moment(endDate).format(),
-// address,
-// coords: await getCoords(address), // contain this object {lat: '', lng: ''}
-// description,
-// name,
-// current: true,
-// cancelled: false
 
 export default ProjectProfile;

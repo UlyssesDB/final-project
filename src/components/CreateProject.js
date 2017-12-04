@@ -30,6 +30,10 @@ class CreateProject extends Component {
     return (
       <div className="createproject">
         <div><br />
+          <Link to={'/mainpage'}>
+            <button>Back to mainpage</button>
+          </Link>
+          <br/>
           <label>name:</label>
           <input type='text' value={this.state.name} onChange={(e) => this.setState({ ...this.state, name: e.target.value })} />
           <br />
